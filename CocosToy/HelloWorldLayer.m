@@ -33,21 +33,59 @@
 {
 	// always call "super" init
 	// Apple recommends to re-assign "self" with the "super" return value
-	if( (self=[super init])) {
-		
+	if( (self=[super initWithColor:ccc4(180, 180, 255, 255)])) {
+        self.isTouchEnabled = YES;
+
 		// create and initialize a Label
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
+		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Click to Orbit" fontName:@"Helvetica" fontSize:20];
+        planet1 = [CCSprite spriteWithFile:@"Planet1.png" rect:CGRectMake(0, 0, 500, 500)];
+        planet2 = [CCSprite spriteWithFile:@"Planet2.png" rect:CGRectMake(0, 0, 500, 500)];
+        planet3 = [CCSprite spriteWithFile:@"Planet3.png" rect:CGRectMake(0, 0, 500, 500)];
 
 		// ask director the the window size
-		CGSize size = [[CCDirector sharedDirector] winSize];
+		//CGSize size = [[CCDirector sharedDirector] winSize];
 	
 		// position the label on the center of the screen
-		label.position =  ccp( size.width /2 , size.height/2 );
-		
+		label.position =  ccp( 70 , 300 );
+		planet1.position = ccp(300, 100);
+        planet2.position = ccp(250, 140);
+        planet3.position = ccp(200, 200);
+        
+        planet1.scale = .2;
+        planet2.scale = .4;
+        planet3.scale = .3;
+        
 		// add the label as a child to this Layer
-		[self addChild: label];
+		[self addChild:label];
+        [self addChild:planet1];
+        [self addChild:planet2];
+        [self addChild:planet3];
 	}
+
 	return self;
+
+}
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (going) {
+        [self unschedule:@selector(orbit)];
+        going = NO;
+    }
+    else {
+        [self schedule:@selector(orbit) interval:.01];
+        going = YES;
+    }
+}
+-(void)orbit{
+    float radius1 = 100;
+    float radius2 = 150;
+    float radius3 = 180;
+    angle += M_PI/180;
+    CGPoint newPos1 = CGPointMake(cos(angle)*radius1+300, sin(angle)*radius1+100);
+    CGPoint newPos2 = CGPointMake(sin(angle)*radius2+250, cos(angle)*radius2+140);
+    CGPoint newPos3 = CGPointMake(cos(angle)*radius3+200, sin(angle)*radius3+200);
+    planet1.position = newPos1;
+    planet2.position = newPos2;
+    planet3.position = newPos3;
 }
 
 // on "dealloc" you need to release all your retained objects
